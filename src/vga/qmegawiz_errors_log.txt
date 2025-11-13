@@ -1,0 +1,10 @@
+
+
+//VSRV2/D.Homes$/louwenda/Desktop/snake_game_fpga/src/vga/vga_pll.v
+
+Nov 13 04PM:44:18>: Error in CNX file format.
+
+Error messages are listed in file
+//VSRV2/D.Homes$/louwenda/Desktop/snake_game_fpga/src/vga/vga_pll.cnxerr.
+
+Can't create the custom megafunction variation file(s)

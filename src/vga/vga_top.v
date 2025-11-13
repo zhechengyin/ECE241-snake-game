@@ -1,91 +1,165 @@
 // ===========================================================
 // Module: vga_top
-// Description:
-//   顶层：蛇头、网格映射、随机水果、绘制、VGA 适配器。
-//   接收外部的方向和移动节拍来控制蛇头。
+// Description: Snake engine + fruit + painter + VGA adapter
 // ===========================================================
 module vga_top(
-    input  wire        CLOCK_50,
-    input  wire [1:0]  KEY,        // KEY[0] = resetn
-    input  wire [1:0]  dir,        // 新增：键盘方向
-    input  wire        move_tick,  // 新增：移动脉冲
-    output wire [7:0]  VGA_R,
-    output wire [7:0]  VGA_G,
-    output wire [7:0]  VGA_B,
-    output wire        VGA_HS,
-    output wire        VGA_VS,
-    output wire        VGA_BLANK_N,
-    output wire        VGA_SYNC_N,
-    output wire        VGA_CLK
+    input  wire CLOCK_50,
+    input  wire [1:0] KEY,  // KEY[0] = resetn
+    input  wire [1:0] dir,
+    output wire [7:0] VGA_R,
+    output wire [7:0] VGA_G,
+    output wire [7:0] VGA_B,
+    output wire       VGA_HS,
+    output wire       VGA_VS,
+    output wire       VGA_BLANK_N,
+    output wire       VGA_SYNC_N,
+    output wire       VGA_CLK
 );
-    // 基本参数
-    localparam H_RES     = 640;
-    localparam V_RES     = 480;
-    localparam CELL_PX   = 16;
-    localparam GRID_W    = H_RES / CELL_PX;  // 40
-    localparam GRID_H    = V_RES / CELL_PX;  // 30
 
     wire resetn = KEY[0];
 
-    // 蛇头 cell 坐标
-    wire [9:0] x_cell, y_cell;
-    snake_head_position u_snake_head (
-        .clk       (CLOCK_50),
-        .resetn    (resetn),
-        .dir       (dir),        // 传递方向
-        .move_tick (move_tick),  // 传递移动节拍
-        .x_cell    (x_cell),
-        .y_cell    (y_cell)
+    // -------------------------------------------
+    // 1 Hz movement tick
+    // -------------------------------------------
+    wire snake_step;
+
+    game_tick #(
+        .INPUT_CLK_FREQ(50_000_000),
+        .TICK_FREQ     (1)
+    ) u_move_tick (
+        .clk    (CLOCK_50),
+        .resetn (resetn),
+        .tick   (snake_step)     // FIXED
     );
 
-    // 随机水果（cell 坐标）
-    // 为了简化当前目标，暂时禁用随机水果逻辑
-    wire [5:0] fruit_x_cell = 6'd20; // 固定水果位置
-    wire [5:0] fruit_y_cell = 6'd15;
+    // -------------------------------------------
+    // Snake Engine
+    // -------------------------------------------
+    wire [5:0] snake_x_cell6, snake_y_cell6;
+    wire [7:0] snake_len;
+    wire       ate_fruit;
+    wire       game_over;
 
-    // cell → 像素中心（*16 + 8）
+    snake_engine #(
+        .H_CELLS(40),
+        .V_CELLS(30),
+        .MAX_LEN(64)
+    ) u_snake (
+        .clk               (CLOCK_50),
+        .rst_n             (resetn),
+        .step              (snake_step),
+        .dir               (dir),
+        .fruit_x_cell      (fruit_x_cell),
+        .fruit_y_cell      (fruit_y_cell),
+        .snake_head_x_cell (snake_x_cell6),
+        .snake_head_y_cell (snake_y_cell6),
+        .game_over         (game_over),
+        .ate_fruit         (ate_fruit),
+        .snake_len         (snake_len)
+    );
+
+    // -------------------------------------------
+    // Fruit placer
+    // -------------------------------------------
+    wire [5:0] fruit_x_cell, fruit_y_cell;
+    wire       fruit_done, fruit_busy;
+
+    reg fruit_req;
+    always @(posedge CLOCK_50 or negedge resetn) begin
+        if (!resetn)
+            fruit_req <= 1'b1;
+        else if (fruit_done)
+            fruit_req <= 1'b0;
+    end
+
+    fruit_placer #(
+        .CELL_PX(16),
+        .H_CELLS(40),
+        .V_CELLS(30),
+        .MARGIN_CELLS(1),
+        .TRIES(16),
+        .MIN_DIST(3)
+    ) u_fruit (
+        .clk          (CLOCK_50),
+        .resetn       (resetn),
+        .request      (ate_fruit || fruit_req),
+        .snake_x_cell (snake_x_cell6),
+        .snake_y_cell (snake_y_cell6),
+        .fruit_x_cell (fruit_x_cell),
+        .fruit_y_cell (fruit_y_cell),
+        .done         (fruit_done),
+        .busy         (fruit_busy)
+    );
+
+    // cell -> pixel
     wire [9:0] fruit_cx = {fruit_x_cell, 4'b0000} + 10'd8;
     wire [9:0] fruit_cy = {fruit_y_cell, 4'b0000} + 10'd8;
 
-    // 网格映射：蛇头 cell → 像素区间
+    // -------------------------------------------
+    // Grid map for snake
+    // -------------------------------------------
     wire [9:0] x_min_px, x_max_px;
     wire [9:0] y_min_px, y_max_px;
+
     grid_mapper u_mapper (
-        .x_cell   (x_cell),
-        .y_cell   (y_cell),
+        .x_cell   (snake_x_cell6),
+        .y_cell   (snake_y_cell6),
         .x_min_px (x_min_px),
         .x_max_px (x_max_px),
         .y_min_px (y_min_px),
         .y_max_px (y_max_px)
     );
 
-    // 绘制模块
+    // -------------------------------------------
+    // Painter refresh controller
+    // -------------------------------------------
+    wire painter_busy;
+    reg  start_frame;
+
+    always @(posedge CLOCK_50 or negedge resetn) begin
+        if (!resetn)
+            start_frame <= 1'b1;
+        else if (!painter_busy)
+            start_frame <= 1'b1;   // trigger next frame
+        else
+            start_frame <= 1'b0;
+    end
+
+    // -------------------------------------------
+    // Painter
+    // -------------------------------------------
     wire [9:0] x;
     wire [9:0] y;
     wire [2:0] color_3b;
     wire       write_stb;
-    wire       busy;
-
-    // 3-bit → 9-bit (RRR GGG BBB)
-    wire [8:0] color_9b = { {3{color_3b[2]}}, {3{color_3b[1]}}, {3{color_3b[0]}} };
 
     painter u_painter (
         .clk       (CLOCK_50),
         .resetn    (resetn),
+
         .x_min_px  (x_min_px),
         .x_max_px  (x_max_px),
         .y_min_px  (y_min_px),
         .y_max_px  (y_max_px),
+
         .fruit_cx  (fruit_cx),
         .fruit_cy  (fruit_cy),
+
+        .start     (start_frame),   // FIXED POSITION
+
         .x         (x),
         .y         (y),
         .colour    (color_3b),
         .plot      (write_stb),
-        .busy      (busy)
+        .busy      (painter_busy)   // FIXED NAME
     );
 
-    // VGA 适配器
+    // 3-bit to 9-bit colour
+    wire [8:0] color_9b = { {3{color_3b[2]}}, {3{color_3b[1]}}, {3{color_3b[0]}} };
+
+    // -------------------------------------------
+    // VGA adapter
+    // -------------------------------------------
     vga_adapter VGA (
         .resetn      (resetn),
         .clock       (CLOCK_50),
@@ -102,7 +176,9 @@ module vga_top(
         .VGA_SYNC_N  (VGA_SYNC_N),
         .VGA_CLK     (VGA_CLK)
     );
+
     defparam VGA.RESOLUTION        = "640x480";
     defparam VGA.COLOR_DEPTH       = 9;
     defparam VGA.BACKGROUND_IMAGE  = "";
+
 endmodule

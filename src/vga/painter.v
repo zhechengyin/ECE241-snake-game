@@ -15,6 +15,8 @@ module painter(
     // 新增：水果像素中心
     input  wire [9:0]  fruit_cx,
     input  wire [9:0]  fruit_cy,
+    // 新增：重绘触发信号
+    input  wire        start,
 
     // 输出到 VGA adapter
     output reg  [9:0]  x,
@@ -154,6 +156,13 @@ module painter(
                 // -------------------------------------------------
                 S_IDLE: begin
                     busy <= 1'b0;
+                    if (start) begin
+                        // 重置扫描坐标，准备重绘
+                        xi     <= 10'd0;
+                        yi     <= 10'd0;
+                        busy   <= 1'b1;
+                        state  <= S_INIT_BG;
+                    end
                 end
             endcase
         end

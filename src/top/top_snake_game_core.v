@@ -76,6 +76,7 @@ module game (
 		  .right_pulse (rt),
         .dir     (dir)
     );
+	 
 
 
     // VGA + Snake Game Core
@@ -91,7 +92,6 @@ module game (
         .CLOCK_50   (CLOCK_50),
         .KEY        ({1'b0, resetn}),  // KEY[1:0] for vga_top: {unused, resetn}
         .dir        (dir),
-
         .VGA_R      (VGA_R),
         .VGA_G      (VGA_G),
         .VGA_B      (VGA_B),

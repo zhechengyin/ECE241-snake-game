@@ -7,8 +7,8 @@
 // ===========================================================
 
 module grid_mapper (
-    input  wire [9:0] x_cell,   // 格子坐标 X (0~39)
-    input  wire [9:0] y_cell,   // 格子坐标 Y (0~29)
+    input  wire [5:0] x_cell,   // 格子坐标 X (0~39)
+    input  wire [5:0] y_cell,   // 格子坐标 Y (0~29)
     output wire [9:0] x_min_px, // 对应像素左边界
     output wire [9:0] x_max_px, // 对应像素右边界
     output wire [9:0] y_min_px, // 对应像素上边界

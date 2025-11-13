@@ -1,0 +1,1 @@
+Warning (10268): Verilog HDL information at ps2_rx.v(34): always construct contains both blocking and non-blocking assignments File: //VSRV2/D.Homes$/louwenda/Desktop/snake_game_fpga/src/input/ps2_rx.v Line: 34

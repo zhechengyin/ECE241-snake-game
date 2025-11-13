@@ -41,14 +41,10 @@ set_global_assignment -name DEVICE 5CSEMA5F31C6
 set_global_assignment -name TOP_LEVEL_ENTITY game
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION 18.0.0
 set_global_assignment -name PROJECT_CREATION_TIME_DATE "16:41:33  NOVEMBER 08, 2025"
-set_global_assignment -name LAST_QUARTUS_VERSION "18.1.0 Lite Edition"
+set_global_assignment -name LAST_QUARTUS_VERSION "23.1std.0 Lite Edition"
 set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
 set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
 set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
-set_global_assignment -name VERILOG_FILE //VSRV2/D.Homes\$/louwenda/Desktop/244lab/project/Snake_head_control/snake_head.v
-set_global_assignment -name VERILOG_FILE //VSRV2/D.Homes\$/louwenda/Desktop/244lab/project/IO_control/ps2_rx.v
-set_global_assignment -name VERILOG_FILE //VSRV2/D.Homes\$/louwenda/Desktop/244lab/project/IO_control/ps2_scancode.v
-set_global_assignment -name VERILOG_FILE //VSRV2/D.Homes\$/louwenda/Desktop/244lab/project/IO_control/snake_dir.v
 set_location_assignment PIN_AJ4 -to ADC_CS_N
 set_location_assignment PIN_AK4 -to ADC_DIN
 set_location_assignment PIN_AK3 -to ADC_DOUT
@@ -307,33 +303,24 @@ set_location_assignment PIN_E12 -to VGA_R[6]
 set_location_assignment PIN_F13 -to VGA_R[7]
 set_location_assignment PIN_C10 -to VGA_SYNC_N
 set_location_assignment PIN_D11 -to VGA_VS
-set_global_assignment -name VERILOG_FILE //VSRV2/D.Homes\$/louwenda/Desktop/244lab/project/Snake_head_control/Verilog2.v
-set_global_assignment -name VERILOG_FILE //VSRV2/D.Homes\$/louwenda/Desktop/244lab/project/Snake_head_control/top_snake_test.v
 set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
 set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
-set_global_assignment -name VERILOG_FILE snake_head.v
-set_global_assignment -name VERILOG_FILE top_snake_test.v
-set_global_assignment -name VERILOG_FILE ../IO_control/ps2_rx.v
-set_global_assignment -name VERILOG_FILE ../IO_control/ps2_scancode.v
-set_global_assignment -name VERILOG_FILE ../IO_control/snake_dir.v
-set_global_assignment -name VERILOG_FILE //VSRV1/B.Homes\$/yinzhech/Desktop/Snake_head_control/snake_head.v
-set_global_assignment -name VERILOG_FILE //VSRV1/B.Homes\$/yinzhech/Desktop/Snake_head_control/top_snake_test.v
-set_global_assignment -name VERILOG_FILE //VSRV1/B.Homes\$/yinzhech/Desktop/IO_control/ps2_rx.v
-set_global_assignment -name VERILOG_FILE //VSRV1/B.Homes\$/yinzhech/Desktop/IO_control/ps2_scancode.v
-set_global_assignment -name VERILOG_FILE //VSRV1/B.Homes\$/yinzhech/Desktop/IO_control/snake_dir.v
-set_global_assignment -name VERILOG_FILE "../snake-vga/fruit_placer.v"
-set_global_assignment -name VERILOG_FILE "../snake-vga/game_tick.v"
-set_global_assignment -name VERILOG_FILE snake_engine.v
-set_global_assignment -name VERILOG_FILE "../snake-vga/grid_mapper.v"
-set_global_assignment -name VERILOG_FILE "../snake-vga/lfsr16.v"
-set_global_assignment -name VERILOG_FILE "../snake-vga/painter.v"
-set_global_assignment -name VERILOG_FILE "../snake-vga/vga_adapter.v"
-set_global_assignment -name VERILOG_FILE "../snake-vga/vga_address_translator.v"
-set_global_assignment -name VERILOG_FILE "../snake-vga/vga_controller.v"
-set_global_assignment -name VERILOG_FILE "../snake-vga/vga_pll.v"
-set_global_assignment -name VERILOG_FILE "../snake-vga/vga_top.v"
-set_global_assignment -name VERILOG_FILE top_snake_game_core.v
 set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
 set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
 set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
+set_global_assignment -name VERILOG_FILE //VSRV2/D.Homes\$/louwenda/Desktop/snake_game_fpga/src/vga/vga_top.v
+set_global_assignment -name VERILOG_FILE //VSRV2/D.Homes\$/louwenda/Desktop/snake_game_fpga/src/vga/vga_pll.v
+set_global_assignment -name VERILOG_FILE //VSRV2/D.Homes\$/louwenda/Desktop/snake_game_fpga/src/vga/vga_controller.v
+set_global_assignment -name VERILOG_FILE //VSRV2/D.Homes\$/louwenda/Desktop/snake_game_fpga/src/vga/vga_address_translator.v
+set_global_assignment -name VERILOG_FILE //VSRV2/D.Homes\$/louwenda/Desktop/snake_game_fpga/src/vga/vga_adapter.v
+set_global_assignment -name VERILOG_FILE //VSRV2/D.Homes\$/louwenda/Desktop/snake_game_fpga/src/vga/painter.v
+set_global_assignment -name VERILOG_FILE //VSRV2/D.Homes\$/louwenda/Desktop/snake_game_fpga/src/vga/grid_mapper.v
+set_global_assignment -name VERILOG_FILE //VSRV2/D.Homes\$/louwenda/Desktop/snake_game_fpga/src/top/top_snake_game_core.v
+set_global_assignment -name VERILOG_FILE //VSRV2/D.Homes\$/louwenda/Desktop/snake_game_fpga/src/input/snake_dir.v
+set_global_assignment -name VERILOG_FILE //VSRV2/D.Homes\$/louwenda/Desktop/snake_game_fpga/src/input/ps2_scancode.v
+set_global_assignment -name VERILOG_FILE //VSRV2/D.Homes\$/louwenda/Desktop/snake_game_fpga/src/input/ps2_rx.v
+set_global_assignment -name VERILOG_FILE //VSRV2/D.Homes\$/louwenda/Desktop/snake_game_fpga/src/game/snake_engine.v
+set_global_assignment -name VERILOG_FILE //VSRV2/D.Homes\$/louwenda/Desktop/snake_game_fpga/src/game/lfsr16.v
+set_global_assignment -name VERILOG_FILE //VSRV2/D.Homes\$/louwenda/Desktop/snake_game_fpga/src/game/game_tick.v
+set_global_assignment -name VERILOG_FILE //VSRV2/D.Homes\$/louwenda/Desktop/snake_game_fpga/src/game/fruit_placer.v
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
